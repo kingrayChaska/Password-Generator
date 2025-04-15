@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="script.js" defer></script>
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+      <h1 class="text-2xl font-bold mb-6 text-center">Sign Up</h1>
+      <form id="signupForm" class="space-y-4" onsubmit="return validateForm()">
+        <div>
+          <label for="username" class="block mb-1 font-medium">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label for="email" class="block mb-1 font-medium">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div class="relative">
+          <label for="password" class="block mb-1 font-medium">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            class="w-full pr-10 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="button"
+            id="togglePasswordBtn"
+            aria-label="Toggle password visibility"
+            class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+          >
+            <svg
+              id="eyeIcon"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+          </button>
+          <div id="passwordStrength" class="mt-1 text-sm font-medium"></div>
+          <div
+            id="passwordPopup"
+            class="hidden absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow p-3 w-full z-10"
+          >
+            <button
+              type="button"
+              id="generatePasswordBtn"
+              class="w-40 bg-blue-600 text-white py-1 rounded hover:bg-blue-700 transition text-sm"
+            >
+              Generate Password
+            </button>
+          </div>
+        </div>
+        <div>
+          <label for="confirmPassword" class="block mb-1 font-medium"
+            >Confirm Password</label
+          >
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition font-semibold"
+        >
+          Sign Up
+        </button>
+      </form>
+    </div>
+
+    <script>
+      const passwordInput = document.getElementById("password");
+      const confirmPasswordInput = document.getElementById("confirmPassword");
+      const passwordPopup = document.getElementById("passwordPopup");
+      const generatePasswordBtn = document.getElementById(
+        "generatePasswordBtn"
+      );
+      const passwordStrengthText = document.getElementById("passwordStrength");
+
+      passwordInput.addEventListener("focus", () => {
+        passwordPopup.classList.remove("hidden");
+      });
+
+      passwordInput.addEventListener("blur", () => {
+        // Delay hiding popup to allow button click
+        setTimeout(() => {
+          passwordPopup.classList.add("hidden");
+        }, 200);
+      });
+
+      function updatePasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+        let text = "";
+        let color = "";
+        switch (strength) {
+          case 0:
+          case 1:
+            text = "Weak";
+            color = "text-red-600";
+            break;
+          case 2:
+            text = "Moderate";
+            color = "text-yellow-600";
+            break;
+          case 3:
+          case 4:
+            text = "Strong";
+            color = "text-green-600";
+            break;
+        }
+        passwordStrengthText.textContent = `Password strength: ${text}`;
+        passwordStrengthText.className = `mt-1 text-sm font-medium ${color}`;
+      }
+
+      generatePasswordBtn.addEventListener("click", () => {
+        // Generate password immediately on click
+        const newPassword = generatePassword(10);
+        passwordInput.value = newPassword;
+        confirmPasswordInput.value = newPassword;
+        updatePasswordStrength(newPassword);
+        passwordPopup.classList.add("hidden");
+      });
+
+      // Add a simple generatePassword function if not defined
+      function generatePassword(length) {
+        const charset =
+          "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
+        let retVal = "";
+        for (let i = 0, n = charset.length; i < length; ++i) {
+          retVal += charset.charAt(Math.floor(Math.random() * n));
+        }
+        return retVal;
+      }
+
+      passwordInput.addEventListener("input", () => {
+        updatePasswordStrength(passwordInput.value);
+      });
+
+      function validateForm() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        if (password !== confirmPassword) {
+          alert("Passwords do not match.");
+          return false;
+        }
+        return true;
+      }
+
+      const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+      togglePasswordBtn.addEventListener("click", () => {
+        const type = passwordInput.type === "password" ? "text" : "password";
+        passwordInput.type = type;
+        confirmPasswordInput.type = type;
+
+        // Toggle eye icon fill
+        const eyeIcon = document.getElementById("eyeIcon");
+        if (type === "text") {
+          eyeIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.223-3.434m1.766-1.766A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a10.05 10.05 0 01-1.223 2.432M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
+          `;
+        } else {
+          eyeIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          `;
+        }
+      });
+    </script>
+  </body>
+</html>
