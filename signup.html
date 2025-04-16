@@ -95,12 +95,24 @@
             class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <button
-          type="submit"
-          class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition font-semibold"
-        >
-          Sign Up
+      <button
+        type="submit"
+        class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition font-semibold"
+      >
+        Sign Up
+      </button>
+    </form>
+    
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+      <div class="bg-white p-6 rounded shadow-md w-80">
+        <h2 class="text-lg font-bold mb-4">Account Created Successfully!</h2>
+        <p>Your account has been created. You can now log in.</p>
+        <button id="closeModalBtn" class="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+          Close
         </button>
+      </div>
+    </div>
       </form>
     </div>
 
@@ -184,7 +196,9 @@
           alert("Passwords do not match.");
           return false;
         }
-        return true;
+        // Show success modal on successful signup
+        successModal.classList.remove("hidden");
+        return false; // Prevent form submission
       }
 
       const togglePasswordBtn = document.getElementById("togglePasswordBtn");
